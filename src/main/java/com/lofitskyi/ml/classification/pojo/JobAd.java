@@ -1,14 +1,13 @@
 package com.lofitskyi.ml.classification.pojo;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class JobAd {
 
     private Long id;
@@ -21,7 +20,7 @@ public class JobAd {
     private String company;
     private String category;
     private String salaryRaw;
-    private String salaryNormalised;
+    private Long salaryNormalised;
     private String sourceName;
 
 }
