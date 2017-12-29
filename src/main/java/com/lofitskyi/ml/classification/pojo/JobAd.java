@@ -20,7 +20,7 @@ public class JobAd {
     private String company;
     private String category;
     private String salaryRaw;
-    private Long salaryNormalised;
+    private Integer salaryNormalised;
     private String sourceName;
 
 }

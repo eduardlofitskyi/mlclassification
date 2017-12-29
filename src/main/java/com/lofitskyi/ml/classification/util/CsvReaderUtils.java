@@ -33,7 +33,7 @@ public class CsvReaderUtils {
                             record.get(7),
                             record.get(8),
                             record.get(9),
-                            Long.valueOf(record.get(10)),
+                            Integer.valueOf(record.get(10)),
                             record.get(11)));
             }
 
