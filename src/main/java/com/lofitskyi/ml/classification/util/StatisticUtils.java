@@ -38,6 +38,9 @@ public class StatisticUtils {
     }
 
     public static DictionaryVector countDictionaryVector(List<JobAd> jobs){
-        return null;
+        DictionaryVector dictionary = new DictionaryVector();
+        jobs.forEach(it -> dictionary.put(it.getFullDescription()));
+
+        return dictionary;
     }
 }
