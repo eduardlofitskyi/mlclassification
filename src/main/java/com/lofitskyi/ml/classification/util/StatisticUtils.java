@@ -3,11 +3,14 @@ package com.lofitskyi.ml.classification.util;
 import com.lofitskyi.ml.classification.pojo.DictionaryVector;
 import com.lofitskyi.ml.classification.pojo.JobAd;
 import com.lofitskyi.ml.classification.pojo.MedianSide;
+import de.daslaboratorium.machinelearning.classifier.Classifier;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
 import static com.lofitskyi.ml.classification.pojo.MedianSide.HIGHER_SIDE;
 import static com.lofitskyi.ml.classification.pojo.MedianSide.LOWER_SIDE;
+import static java.util.Arrays.asList;
 
 public class StatisticUtils {
 
@@ -23,15 +26,43 @@ public class StatisticUtils {
     }
 
     public static Map<MedianSide, List<JobAd>> getClassifiedListBySalary(List<JobAd> jobAds, Integer medianSalary) {
+        Map<MedianSide, List<JobAd>> calculatedBySalary = new HashMap<>();
+        calculatedBySalary.put(LOWER_SIDE, new LinkedList<>());
+        calculatedBySalary.put(HIGHER_SIDE, new LinkedList<>());
+
+        for (JobAd job : jobAds) {
+            if (job.getSalaryNormalised() > medianSalary) {
+                calculatedBySalary.get(HIGHER_SIDE).add(job);
+            } else {
+                calculatedBySalary.get(LOWER_SIDE).add(job);
+            }
+        }
+        return calculatedBySalary;
+    }
+
+    public static Map<MedianSide, List<JobAd>> classifyListBySalary(
+            List<JobAd> jobAds, Classifier<String, MedianSide> classifier) {
         Map<MedianSide, List<JobAd>> classifiedBySalary = new HashMap<>();
         classifiedBySalary.put(LOWER_SIDE, new LinkedList<>());
         classifiedBySalary.put(HIGHER_SIDE, new LinkedList<>());
 
         for (JobAd job : jobAds) {
-            if (job.getSalaryNormalised() > medianSalary) {
-                classifiedBySalary.get(HIGHER_SIDE).add(job);
-            } else {
-                classifiedBySalary.get(LOWER_SIDE).add(job);
+
+            List<String> wordsInDescription = convertToStringList(job.getFullDescription());
+            MedianSide category = classifier.classify(wordsInDescription).getCategory();
+
+            switch (category) {
+                case LOWER_SIDE: {
+                    classifiedBySalary.get(LOWER_SIDE).add(job);
+                    break;
+                }
+                case HIGHER_SIDE: {
+                    classifiedBySalary.get(HIGHER_SIDE).add(job);
+                    break;
+                }
+                default: {
+                    throw new IllegalArgumentException();
+                }
             }
         }
         return classifiedBySalary;
@@ -42,5 +73,10 @@ public class StatisticUtils {
         jobs.forEach(it -> dictionary.put(it.getFullDescription()));
 
         return dictionary;
+    }
+
+    private static List<String> convertToStringList(String text) {
+        String normalizedText = StringUtils.removeAll(text, "\\*");
+        return asList(normalizedText.split(" "));
     }
 }
